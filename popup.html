@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Radio Button Profile Saver</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>CMIS MY ASS</h1>
+  
+    <div class="form-container">
+      <h2>Create New Profile</h2>
+      <form id="newProfileForm">
+        <label for="newProfileName">Profile Name:</label>
+        <input type="text" id="newProfileName">
+        <button type="submit" id="createProfileBtn">Create</button>
+      </form>
+    </div>
+  
+    <div class="form-container">
+      <h2>Manage Profiles</h2>
+      <select id="profileList">
+        <!-- Profiles will be dynamically added here -->
+      </select>
+  
+      <button id="deleteBtn">Delete</button>
+      <button id="loadBtn">Load</button>
+    </div>
+  </div>
+  <script src="popup.js"></script> 
+</body>
+</html>
