@@ -1,33 +1,55 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'getProfiles') {
-      chrome.storage.sync.get('profiles', (result) => {
-        const profiles = result.profiles || {};
-        sendResponse({ profiles: profiles });
-      });
-      return true; // Indicates that the response will be sent asynchronously
-      
-    } else if (message.action === 'createProfile') {
-      chrome.storage.sync.get('profiles', (result) => {
-        const profiles = result.profiles || {};
-        profiles[message.profileName] = message.profileData;
-        chrome.storage.sync.set({ profiles: profiles });
-      });
+// background.js
 
-    } else if (message.action === 'deleteProfile') {
-        chrome.storage.sync.get('profiles', (result) => {
-          const profiles = result.profiles || {};
-          delete profiles[message.profileName];
-          chrome.storage.sync.set({ profiles: profiles });
-        });
+// Initialize an object to store profiles
+let profiles = {};
 
-    } else if (message.action === 'loadProfile') {
-      chrome.storage.sync.get('profiles', (result) => {
-        const profiles = result.profiles || {};
-        const selectedProfile = message.profileName;
-        const profileData = profiles[selectedProfile];
-        sendResponse({ profileData: profileData });
-      });
-      return true; // Indicates that the response will be sent asynchronously
-    }
+// Listen for messages from popup.js
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+
+  if (message.action === 'saveProfile') {
+    // Save the profile to the profiles object
+    profiles[message.profileName] = message.radioStates;
+    // Save the updated profiles object to Chrome storage
+    // chrome.storage.sync.set({ profiles: profiles }, function() {
+    //   sendResponse({ success: true });
+    // });
+    chrome.storage.sync.set({ profiles: profiles }, function() {
+      if (chrome.storage.sync.lastError !== undefined) {
+        console.error(chrome.storage.sync.lastError);
+      } else {
+        console.log("Profiles successfully stored");
+        sendResponse({ success: true });
+      }
+    });
+    return true; 
+    
+  } else if (message.action === 'loadProfile') {
+    // Load a profile from the profiles object
+    const loadedRadioStates = profiles[message.profileName] || [];
+    sendResponse({ radioStates: loadedRadioStates });
+
+  } else if (message.action === 'deleteProfile') {
+    // Delete a profile from the profiles object
+    delete profiles[message.profileName];
+
+    // Save the updated profiles object to Chrome storage
+    chrome.storage.sync.set({ profiles: profiles }, function() {
+      sendResponse({ success: true });
+    });
+
+    // Get the profile from chrome storage
+  } else if (message.action === 'getProfiles') {
+    chrome.storage.sync.get('profiles', (result) => {
+      const profiles = result.profiles || {};
+      sendResponse({ profiles: profiles });
+    });
+    return true; 
+  }
 });
-  
+
+// Initialize profiles from Chrome storage when the extension is installed
+chrome.runtime.onInstalled.addListener(function() {
+  chrome.storage.sync.get(['profiles'], function(result) {
+    profiles = result.profiles || {};
+  });
+});
