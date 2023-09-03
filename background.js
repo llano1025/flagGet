@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
   if (message.action === 'saveProfile') {
     // Save the profile to the profiles object
-    profiles[message.profileName] = message.radioStates;
+    profiles[message.profileName] = { radioStates: message.radioStates, textStates: message.textStates };
     // Save the updated profiles object to Chrome storage
     // chrome.storage.sync.set({ profiles: profiles }, function() {
     //   sendResponse({ success: true });
@@ -25,8 +25,11 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     
   } else if (message.action === 'loadProfile') {
     // Load a profile from the profiles object
-    const loadedRadioStates = profiles[message.profileName] || [];
-    sendResponse({ radioStates: loadedRadioStates });
+    // const loadedRadioStates = profiles[message.profileName] || [];
+    // console.log(loadedRadioStates)
+    // sendResponse({ radioStates: loadedRadioStates });
+    const loadedradioAndText = profiles[message.profileName] || [];
+    sendResponse( loadedradioAndText );
 
   } else if (message.action === 'deleteProfile') {
     // Delete a profile from the profiles object

@@ -23,15 +23,21 @@ document.addEventListener('DOMContentLoaded', function() {
       chrome.tabs.query({ active: true, currentWindow: true }, async function(tabs) {
         const tabId = tabs[0].id;
         try {
-          const radioStates = await chrome.scripting.executeScript({
+          // Get the collected radio button states and text input
+          // const radioStates = await chrome.scripting.executeScript({
+          //   target: { tabId: tabId },
+          //   function: collectRadioStates,
+          // });
+          const radioAndTextData = await chrome.scripting.executeScript({
             target: { tabId: tabId },
-            function: collectRadioStates,
+            function: collectRadioAndTextData,
           });
           // Send the collected radio button states to background script
           const response = await chrome.runtime.sendMessage({
             action: 'saveProfile',
             profileName: profileName,
-            radioStates: radioStates[0],
+            radioStates: radioAndTextData[0].result.radioStates,
+            textStates: radioAndTextData[0].result.textValues
           });
           console.log(response)
           if (response.success) {
@@ -59,17 +65,23 @@ document.addEventListener('DOMContentLoaded', function() {
         action: 'loadProfile',
         profileName: selectedProfile,
       }, (response) => {
-        const loadedRadioStates = response.radioStates;
-        console.log(loadedRadioStates)
-        // Send the loaded radio button states to content.js
+        // const loadedRadioStates = response.radioStates;
+        const loadedradioAndText = response;
+        console.log(loadedradioAndText)
+        // Get the tab id to load the radio button and text input states
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
           const tabId = tabs[0].id;
-          console.log(tabId)
           try {
+            // Load radio button and text input states
+            // chrome.scripting.executeScript({
+            //   target: { tabId: tabId },
+            //   function: applyRadioStates,
+            //   args: [loadedRadioStates],
+            // });
             chrome.scripting.executeScript({
               target: { tabId: tabId },
-              function: applyRadioStates,
-              args: [loadedRadioStates],
+              function: applyRadioAndTextData,
+              args: [loadedradioAndText],
             });
           } catch (error) {
             console.error('Error:', error);
@@ -97,15 +109,58 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-function collectRadioStates() {
+// function collectRadioStates() {
+//   const radioButtons = document.querySelectorAll('input[type="radio"]');
+//   const radioStates = Array.from(radioButtons).map(radio => radio.checked);
+//   return radioStates;
+// }
+
+// function collectTextStates() {
+//   const textInputs = document.querySelectorAll('input[type="text"]');
+//    const textValues = Array.from(textInputs).map((input) => input.value);
+//   return textValues;
+// }
+
+// function applyRadioStates(loadedRadioStates) {
+//   const radioButtons = document.querySelectorAll('input[type="radio"]');
+//   radioButtons.forEach(function(radio, index) {
+//     radio.checked = loadedRadioStates.result[index];
+//   });
+// }
+
+// function applyTextStates(loadedTextStates) {
+//   const textInputs = document.querySelectorAll('input[type="text"]');
+//   textInputs.forEach((textInput, index) => {
+//     if (loadedTextStates[index] !== undefined) {
+//       textInput.value = loadedTextStates.result[index];
+//     }
+//   });
+// }
+
+function collectRadioAndTextData() {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
-  const radioStates = Array.from(radioButtons).map(radio => radio.checked);
-  return radioStates;
+  const textInputs = document.querySelectorAll('input[type="text"]');
+  // Collect radio button states
+  const radioStates = Array.from(radioButtons).map((radio) => radio.checked);
+  // Collect text input values
+  const textValues = Array.from(textInputs).map((input) => input.value);
+  // Return both radio button states and text input values
+  return { radioStates, textValues };
 }
 
-function applyRadioStates(loadedRadioStates) {
+function applyRadioAndTextData(loadedradioAndText) {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
+  const textInputs = document.querySelectorAll('input[type="text"]');
+  console.log(loadedradioAndText)
+  // Apply radio button states
   radioButtons.forEach(function(radio, index) {
-    radio.checked = loadedRadioStates.result[index];
+    radio.checked = loadedradioAndText.radioStates[index];
+  });
+  // Apply text input values
+  textInputs.forEach((textInput, index) => {
+    if (loadedradioAndText !== undefined) {
+      console.log('loadedradioAndTest != undefined')
+      textInput.value = loadedradioAndText.textStates[index];
+    }
   });
 }
