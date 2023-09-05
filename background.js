@@ -8,11 +8,9 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
   if (message.action === 'saveProfile') {
     // Save the profile to the profiles object
-    profiles[message.profileName] = { radioStates: message.radioStates, textStates: message.textStates };
+    profiles[message.profileName] = { radioStates: message.radioStates, textStates: message.textStates, selectStates: message.selectStates };
+    console.log(profiles[message.profileName])
     // Save the updated profiles object to Chrome storage
-    // chrome.storage.sync.set({ profiles: profiles }, function() {
-    //   sendResponse({ success: true });
-    // });
     chrome.storage.sync.set({ profiles: profiles }, function() {
       if (chrome.storage.sync.lastError !== undefined) {
         console.error(chrome.storage.sync.lastError);

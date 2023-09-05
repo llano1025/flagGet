@@ -34,7 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
             action: 'saveProfile',
             profileName: profileName,
             radioStates: radioAndTextData[0].result.radioStates,
-            textStates: radioAndTextData[0].result.textValues
+            textStates: radioAndTextData[0].result.textValues,
+            selectStates: radioAndTextData[0].result.selectedOptions
           });
           console.log(response)
           if (response.success) {
@@ -102,19 +103,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function collectRadioAndTextData() {
+  // Select all elements in the document
   const radioButtons = document.querySelectorAll('input[type="radio"]');
   const textInputs = document.querySelectorAll('input[type="text"]');
+  const selectElements = document.querySelectorAll('select');
+
+  // Create an object to store selected options
+  const selectedOptions = {};
+
+  // Loop through each <select> element
+  selectElements.forEach(function(select) {
+  // Get the currently selected <option> element
+  const selectedOption = select.options[select.selectedIndex];
+  // Store the selected option in the object using the <select>'s id as the key
+  selectedOptions[select.id] = selectedOption.value;
+  });
+
   // Collect radio button states
   const radioStates = Array.from(radioButtons).map((radio) => radio.checked);
   // Collect text input values
   const textValues = Array.from(textInputs).map((input) => input.value);
+
   // Return both radio button states and text input values
-  return { radioStates, textValues };
+  return { radioStates, textValues, selectedOptions };
 }
 
 function applyRadioAndTextData(loadedradioAndText) {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
   const textInputs = document.querySelectorAll('input[type="text"]');
+
   console.log(loadedradioAndText)
   // Apply radio button states
   radioButtons.forEach(function(radio, index) {
@@ -127,4 +144,23 @@ function applyRadioAndTextData(loadedradioAndText) {
       textInput.value = loadedradioAndText.textStates[index];
     }
   });
+  // Apply the select values
+  const selectedOptions = loadedradioAndText.selectStates;
+  for (const selectId in selectedOptions) {
+    if (selectedOptions.hasOwnProperty(selectId)) {
+      // Get the saved option value from the object
+      const savedOptionValue = selectedOptions[selectId];
+      // Find the <select> element by its id
+      const selectElement = document.getElementById(selectId);
+      // Loop through the <select> options to find the one with the saved value
+      for (let i = 0; i < selectElement.options.length; i++) {
+        const option = selectElement.options[i];
+        if (option.value === savedOptionValue) {
+          // Set the selected option
+          option.selected = true;
+          break; // Exit the loop once the option is found
+        }
+      }
+    }
+}
 }
