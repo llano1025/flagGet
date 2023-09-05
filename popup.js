@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             target: { tabId: tabId },
             function: collectRadioAndTextData,
           });
+          console.log(radioAndTextData)
           // Send the collected radio button states to background script
           const response = await chrome.runtime.sendMessage({
             action: 'saveProfile',
@@ -73,11 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
           const tabId = tabs[0].id;
           try {
             // Load radio button and text input states
-            // chrome.scripting.executeScript({
-            //   target: { tabId: tabId },
-            //   function: applyRadioStates,
-            //   args: [loadedRadioStates],
-            // });
             chrome.scripting.executeScript({
               target: { tabId: tabId },
               function: applyRadioAndTextData,
@@ -108,34 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
-
-// function collectRadioStates() {
-//   const radioButtons = document.querySelectorAll('input[type="radio"]');
-//   const radioStates = Array.from(radioButtons).map(radio => radio.checked);
-//   return radioStates;
-// }
-
-// function collectTextStates() {
-//   const textInputs = document.querySelectorAll('input[type="text"]');
-//    const textValues = Array.from(textInputs).map((input) => input.value);
-//   return textValues;
-// }
-
-// function applyRadioStates(loadedRadioStates) {
-//   const radioButtons = document.querySelectorAll('input[type="radio"]');
-//   radioButtons.forEach(function(radio, index) {
-//     radio.checked = loadedRadioStates.result[index];
-//   });
-// }
-
-// function applyTextStates(loadedTextStates) {
-//   const textInputs = document.querySelectorAll('input[type="text"]');
-//   textInputs.forEach((textInput, index) => {
-//     if (loadedTextStates[index] !== undefined) {
-//       textInput.value = loadedTextStates.result[index];
-//     }
-//   });
-// }
 
 function collectRadioAndTextData() {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
