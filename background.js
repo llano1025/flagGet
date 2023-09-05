@@ -25,12 +25,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     
   } else if (message.action === 'loadProfile') {
     // Load a profile from the profiles object
-    // const loadedRadioStates = profiles[message.profileName] || [];
-    // console.log(loadedRadioStates)
-    // sendResponse({ radioStates: loadedRadioStates });
-    const loadedradioAndText = profiles[message.profileName] || [];
-    sendResponse( loadedradioAndText );
-
+    chrome.storage.sync.get(['profiles'], function(result) {
+      profiles = result.profiles || {};
+      const loadedradioAndText = profiles[message.profileName] || [];
+      sendResponse( loadedradioAndText );
+    });
+    return true; 
+    
   } else if (message.action === 'deleteProfile') {
     // Delete a profile from the profiles object
     delete profiles[message.profileName];
