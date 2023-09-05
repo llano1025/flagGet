@@ -148,15 +148,13 @@ function applyRadioAndTextData(loadedradioAndText) {
     if (selectedOptions.hasOwnProperty(selectId)) {
       // Get the saved option value from the object
       const savedOptionValue = selectedOptions[selectId];
-      // Find the <select> element by its id
       const selectElement = document.getElementById(selectId);
-      // Loop through the <select> options to find the one with the saved value
+      // Loop through the <select> options
       for (let i = 0; i < selectElement.options.length; i++) {
         const option = selectElement.options[i];
         if (option.value === savedOptionValue) {
-          // Set the selected option
           option.selected = true;
-          break; // Exit the loop once the option is found
+          break; 
         }
       }
     }
