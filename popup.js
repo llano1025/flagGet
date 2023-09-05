@@ -24,10 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const tabId = tabs[0].id;
         try {
           // Get the collected radio button states and text input
-          // const radioStates = await chrome.scripting.executeScript({
-          //   target: { tabId: tabId },
-          //   function: collectRadioStates,
-          // });
           const radioAndTextData = await chrome.scripting.executeScript({
             target: { tabId: tabId },
             function: collectRadioAndTextData,
