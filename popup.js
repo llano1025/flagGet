@@ -37,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
             textStates: radioAndTextData[0].result.textValues,
             selectStates: radioAndTextData[0].result.selectedOptions
           });
-          console.log(response)
           if (response.success) {
             // Update the profile list
             const option = document.createElement('option');
@@ -131,8 +130,7 @@ function collectRadioAndTextData() {
 function applyRadioAndTextData(loadedradioAndText) {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
   const textInputs = document.querySelectorAll('input[type="text"]');
-
-  console.log(loadedradioAndText)
+  
   // Apply radio button states
   radioButtons.forEach(function(radio, index) {
     radio.checked = loadedradioAndText.radioStates[index];
