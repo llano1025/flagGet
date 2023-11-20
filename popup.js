@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Send a message to background.js to retrieve the existing profiles
   chrome.runtime.sendMessage({ action: 'getProfiles' }, (response) => {
     const profiles = response.profiles || {};
+    console.log(profiles)
     for (const profileName in profiles) {
       const option = document.createElement('option');
       option.value = profileName;
@@ -28,13 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
             target: { tabId: tabId },
             function: collectRadioAndTextData,
           });
-          console.log(radioAndTextData)
+          // console.log(radioAndTextData)
           // Send the collected radio button states to background script
           const response = await chrome.runtime.sendMessage({
             action: 'saveProfile',
             profileName: profileName,
             radioStates: radioAndTextData[0].result.radioStates,
-            textStates: radioAndTextData[0].result.textValues,
             selectStates: radioAndTextData[0].result.selectedOptions
           });
           if (response.success) {
@@ -104,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function() {
 function collectRadioAndTextData() {
   // Select all elements in the document
   const radioButtons = document.querySelectorAll('input[type="radio"]');
-  const textInputs = document.querySelectorAll('input[type="text"]');
   const selectElements = document.querySelectorAll('select');
 
   // Create an object to store selected options
@@ -120,28 +119,19 @@ function collectRadioAndTextData() {
 
   // Collect radio button states
   const radioStates = Array.from(radioButtons).map((radio) => radio.checked);
-  // Collect text input values
-  const textValues = Array.from(textInputs).map((input) => input.value);
 
   // Return both radio button states and text input values
-  return { radioStates, textValues, selectedOptions };
+  return { radioStates, selectedOptions };
 }
 
 function applyRadioAndTextData(loadedradioAndText) {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
-  const textInputs = document.querySelectorAll('input[type="text"]');
   
   // Apply radio button states
   radioButtons.forEach(function(radio, index) {
     radio.checked = loadedradioAndText.radioStates[index];
   });
-  // Apply text input values
-  textInputs.forEach((textInput, index) => {
-    if (loadedradioAndText !== undefined) {
-      console.log('loadedradioAndTest != undefined')
-      textInput.value = loadedradioAndText.textStates[index];
-    }
-  });
+
   // Apply the select values
   const selectedOptions = loadedradioAndText.selectStates;
   for (const selectId in selectedOptions) {
