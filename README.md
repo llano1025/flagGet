@@ -1,5 +1,5 @@
 # flag-get!
-Update to 1.1 on February 2024.
+Update to 1.1 in February 2024.
 "flag-get!" is a Chrome extension that enables saving and loading of HTML elements such as text, select & radio. The extension is developed based on Chrome Extension Manifest V3.
 
 ## Installation
