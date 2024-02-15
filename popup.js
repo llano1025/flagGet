@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
             target: { tabId: tabId },
             function: collectRadioAndTextData,
           });
-          // console.log(radioAndTextData)
+          console.log(radioAndTextData)
           // Send the collected radio button states to background script
           const response = await chrome.runtime.sendMessage({
             action: 'saveProfile',
@@ -117,9 +117,17 @@ function collectRadioAndTextData() {
   selectedOptions[select.id] = selectedOption.value;
   });
 
-  // Collect radio button states
-  const radioStates = Array.from(radioButtons).map((radio) => radio.checked);
+  // // Collect radio button states
+  // const radioStates = Array.from(radioButtons).map((radio) => radio.checked);
 
+ // Collect radio button states with their corresponding names and values
+ const radioStates = {};
+ radioButtons.forEach(function(radio) {
+   if (radio.checked) {
+     radioStates[radio.name] = radio.value;
+   }
+ });
+ 
   // Return both radio button states and text input values
   return { radioStates, selectedOptions };
 }
@@ -127,10 +135,29 @@ function collectRadioAndTextData() {
 function applyRadioAndTextData(loadedradioAndText) {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
   
-  // Apply radio button states
-  radioButtons.forEach(function(radio, index) {
-    radio.checked = loadedradioAndText.radioStates[index];
-  });
+  // // Apply radio button states
+  // radioButtons.forEach(function(radio, index) {
+  //   radio.checked = loadedradioAndText.radioStates[index];
+  // });
+
+  // // Apply radio button states
+  // radioButtons.forEach(function(radio, index) {
+  //   const radioName = radio.name;
+  //   if (loadedradioAndText.radioStates.hasOwnProperty(radioName)) {
+  //     radio.checked = loadedradioAndText.radioStates[radioName];
+  //   }
+  // });  
+
+   // Apply radio button states
+   radioButtons.forEach(function(radio) {
+    const radioName = radio.name;
+    const radioValue = radio.value;
+    if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue) {
+      radio.checked = true;
+    } else {
+      radio.checked = false;
+    }
+  });  
 
   // Apply the select values
   const selectedOptions = loadedradioAndText.selectStates;
