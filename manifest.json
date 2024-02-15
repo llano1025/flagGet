@@ -1,19 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Radio Button Loader",
-  "version": "1.0",
+  "name": "flagGet",
+  "version": "1.1",
   "permissions": [
     "activeTab",
     "tabs", 
     "storage",
     "scripting",
     "runtime"
-  ],
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
   ],
   "host_permissions": [
     "http://*/*",
