@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const saveBtn = document.getElementById('saveBtn');
   const loadBtn = document.getElementById('loadBtn');
   const deleteBtn = document.getElementById('deleteBtn');
+  const safetyCheck = document.getElementById('safetyCb');
 
   // Send a message to background.js to retrieve the existing profiles
   chrome.runtime.sendMessage({ action: 'getProfiles' }, (response) => {
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
             chrome.scripting.executeScript({
               target: { tabId: tabId },
               function: applyRadioAndTextData,
-              args: [loadedradioAndText],
+              args: [loadedradioAndText, safetyCheck.checked],
             });
           } catch (error) {
             console.error('Error:', error);
@@ -127,12 +128,12 @@ function collectRadioAndTextData() {
      radioStates[radio.name] = radio.value;
    }
  });
- 
+
   // Return both radio button states and text input values
   return { radioStates, selectedOptions };
 }
 
-function applyRadioAndTextData(loadedradioAndText) {
+function applyRadioAndTextData(loadedradioAndText, safetyCheck) {
   const radioButtons = document.querySelectorAll('input[type="radio"]');
   
   // // Apply radio button states
@@ -140,22 +141,22 @@ function applyRadioAndTextData(loadedradioAndText) {
   //   radio.checked = loadedradioAndText.radioStates[index];
   // });
 
-  // // Apply radio button states
-  // radioButtons.forEach(function(radio, index) {
-  //   const radioName = radio.name;
-  //   if (loadedradioAndText.radioStates.hasOwnProperty(radioName)) {
-  //     radio.checked = loadedradioAndText.radioStates[radioName];
-  //   }
-  // });  
-
    // Apply radio button states
    radioButtons.forEach(function(radio) {
     const radioName = radio.name;
     const radioValue = radio.value;
-    if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue) {
-      radio.checked = true;
-    } else {
-      radio.checked = false;
+    if (safetyCheck){
+      if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue && radioName.includes('Scorecard')) {
+        radio.checked = true;
+      } else {
+        radio.checked = false;
+      }
+    }else{
+      if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue) {
+        radio.checked = true;
+      } else {
+        radio.checked = false;
+      }
     }
   });  
 
