@@ -145,10 +145,10 @@ function applyRadioAndTextData(loadedradioAndText, safetyCheck) {
    radioButtons.forEach(function(radio) {
     const radioName = radio.name;
     const radioValue = radio.value;
-    if (safetyCheck && radioName.includes('Scorecard')){
-      if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue) {
+    if (safetyCheck){
+      if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue && radioName.includes('Scorecard')) {
         radio.checked = true;
-      } else {
+      } else if (radioName.includes('Scorecard')){
         radio.checked = false;
       }
     }else{
