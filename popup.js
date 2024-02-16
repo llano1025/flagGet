@@ -145,8 +145,8 @@ function applyRadioAndTextData(loadedradioAndText, safetyCheck) {
    radioButtons.forEach(function(radio) {
     const radioName = radio.name;
     const radioValue = radio.value;
-    if (safetyCheck){
-      if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue && radioName.includes('Scorecard')) {
+    if (safetyCheck && radioName.includes('Scorecard')){
+      if (loadedradioAndText.radioStates.hasOwnProperty(radioName) && loadedradioAndText.radioStates[radioName] === radioValue) {
         radio.checked = true;
       } else {
         radio.checked = false;
